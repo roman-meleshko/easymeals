@@ -1,6 +1,3 @@
-# Default docker-compose.yml - uses development settings
-# For production, use: docker compose -f docker-compose.prod.yml up
-
 services:
   db:
     build:
@@ -12,23 +9,24 @@ services:
       - POSTGRES_DB=${POSTGRES_NAME}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-    restart: on-failure
+    restart: always
     env_file:
-      - .env
+      - .prod-env
     healthcheck:
       test: [ "CMD", "pg_isready", "-q", "-d", "${POSTGRES_NAME}", "-U", "${POSTGRES_USER}"]
-      interval: 5s
+      interval: 10s
       timeout: 5s
-      retries: 6
-    ports:
-      - "5432:5432"  # Expose PostgreSQL for local debugging
+      retries: 5
   
   web:
     build: .
-    command: sh -c "python manage.py collectstatic --noinput && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    command: >
+      sh -c "python manage.py collectstatic --noinput &&
+             python manage.py migrate &&
+             python manage.py createsuperuser --noinput --username $DJANGO_SUPERUSER_USERNAME --email $DJANGO_SUPERUSER_EMAIL || true &&
+             gunicorn mealprep.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 60"
     volumes:
       - static_volume:/mealprep/staticfiles
-      - ./mealprep:/mealprep  # Mount code for hot-reload
     expose:
       - 8000
     env_file:
@@ -37,6 +35,7 @@ services:
       - POSTGRES_NAME=${POSTGRES_NAME}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    restart: always
     depends_on:
       db:
         condition: service_healthy
@@ -47,6 +46,7 @@ services:
       - "80:80"
     volumes:
       - static_volume:/mealprep/staticfiles
+    restart: always
     depends_on:
       - web
 

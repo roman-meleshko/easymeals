@@ -1,5 +1,3 @@
-import json
-
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
@@ -83,7 +81,7 @@ def shopping(request) -> render:
 @login_required
 def recipe(request, recipe_id: int) -> render:
     """Recipe page with description, list of ingredients and instructions."""
-    recipe_dict = json.loads(get_object_or_404(Recipe, recipe_id=recipe_id).recipe_json)
+    recipe_dict = eval(get_object_or_404(Recipe, recipe_id=recipe_id).recipe_json)
     nutr_val_cat = ['Énergie (kJ)', 'Énergie (kcal)', 'Matières grasses', 'dont acides gras saturés',
                     'Glucides', 'dont sucres', 'Protéines', 'Sel']
     unit = ['kJ', 'kcal'] + ['g'] * 5
