@@ -156,5 +156,6 @@ AUTH_USER_MODEL = 'recipes.User'
 RECAPTCHA_PUBLIC_KEY = os.environ.get('RECAPTCHA_PUBLIC_KEY')
 RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_PRIVATE_KEY')
 
-# Silence reCAPTCHA test key warning in development
-SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
+# Silence reCAPTCHA test key warning in development only
+if DEBUG:
+    SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']

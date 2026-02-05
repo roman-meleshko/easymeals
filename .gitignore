@@ -1,7 +1,7 @@
 # Project specific files to ignore
 # IMPORTANT: Keep scraped HelloFresh content private (copyright)
 *dump.sql
-static/recipes/
+static/recipes/images
 pg-data/
 archive/
 admin/
