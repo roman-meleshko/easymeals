@@ -21,7 +21,7 @@ admin/
 *.csv
 *.xlsx
 recipes/recipes_html
-mealprep/recipes/static/recipes/
+mealprep/recipes/static/recipes/images/
 
 # Web scraping projects
 *webdriver-manager*
